@@ -15,15 +15,24 @@ const SESSION_SECRET = process.env.SESSION_SECRET || "selfhelp_secret_key_hackat
 
 // 1. Connect to MongoDB
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => {
     console.log("----------------------------------------");
     console.log("✓ MongoDB Connected Successfully!");
-    console.log("Database URI:", MONGODB_URI);
+    console.log("  Database:", MONGODB_URI.includes("@") ? "MongoDB Atlas (Cloud)" : "Local MongoDB (127.0.0.1)");
     console.log("----------------------------------------");
   })
   .catch((err) => {
+    console.error("----------------------------------------");
     console.error("✗ MongoDB Connection Error:", err.message);
+    if (!process.env.MONGODB_URI || process.env.MONGODB_URI.includes("127.0.0.1")) {
+      console.error("👉 IMPORTANT FOR RENDER DEPLOYMENT:");
+      console.error("   On Render.com, you must set the 'MONGODB_URI' environment variable to your MongoDB Atlas cloud URL.");
+      console.error("   Example: mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/selfhelp_db?retryWrites=true&w=majority");
+    }
+    console.error("----------------------------------------");
   });
 
 // 2. Configure View Engine (EJS)

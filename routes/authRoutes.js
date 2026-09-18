@@ -190,6 +190,123 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// GET /seed-db - 1-Click Database Population Route (Useful for Render and Cloud Deployments)
+router.get("/seed-db", async (req, res) => {
+  try {
+    const Savings = require("../models/Savings");
+    const Loan = require("../models/Loan");
+    const Repayment = require("../models/Repayment");
+
+    // 1. Clear existing collections
+    await User.deleteMany({});
+    await Group.deleteMany({});
+    await Savings.deleteMany({});
+    await Loan.deleteMany({});
+    await Repayment.deleteMany({});
+
+    // 2. Hash passwords
+    const adminPassword = await bcrypt.hash("admin123", 10);
+    const memberPassword = await bcrypt.hash("member123", 10);
+
+    // 3. Create Group
+    const group = await Group.create({
+      name: "Shakti Self Help Group",
+      description: "Local women's community savings and micro-finance group",
+    });
+
+    // 4. Create Admin
+    await User.create({
+      name: "Group Admin",
+      email: "admin@gmail.com",
+      password: adminPassword,
+      role: "Admin",
+      groupId: group._id,
+    });
+
+    // 5. Create 5 Members
+    const membersData = [
+      { name: "Rahul Sharma", email: "rahul@gmail.com" },
+      { name: "Sunita Devi", email: "sunita@gmail.com" },
+      { name: "Anita Roy", email: "anita@gmail.com" },
+      { name: "Ramesh Kumar", email: "ramesh@gmail.com" },
+      { name: "Priya Patel", email: "priya@gmail.com" },
+    ];
+
+    const members = [];
+    for (let m of membersData) {
+      const created = await User.create({
+        name: m.name,
+        email: m.email,
+        password: memberPassword,
+        role: "Member",
+        groupId: group._id,
+      });
+      members.push(created);
+    }
+
+    // 6. Create Savings
+    const savingsRecords = [
+      { memberId: members[0]._id, groupId: group._id, amount: 500, month: "April", year: 2026 },
+      { memberId: members[0]._id, groupId: group._id, amount: 500, month: "May", year: 2026 },
+      { memberId: members[0]._id, groupId: group._id, amount: 500, month: "June", year: 2026 },
+      { memberId: members[0]._id, groupId: group._id, amount: 500, month: "July", year: 2026 },
+      { memberId: members[0]._id, groupId: group._id, amount: 500, month: "August", year: 2026 },
+      { memberId: members[0]._id, groupId: group._id, amount: 500, month: "September", year: 2026 },
+      { memberId: members[1]._id, groupId: group._id, amount: 500, month: "June", year: 2026 },
+      { memberId: members[1]._id, groupId: group._id, amount: 500, month: "July", year: 2026 },
+      { memberId: members[1]._id, groupId: group._id, amount: 500, month: "August", year: 2026 },
+      { memberId: members[1]._id, groupId: group._id, amount: 500, month: "September", year: 2026 },
+      { memberId: members[2]._id, groupId: group._id, amount: 500, month: "July", year: 2026 },
+      { memberId: members[2]._id, groupId: group._id, amount: 500, month: "August", year: 2026 },
+      { memberId: members[2]._id, groupId: group._id, amount: 500, month: "September", year: 2026 },
+      { memberId: members[3]._id, groupId: group._id, amount: 500, month: "August", year: 2026 },
+      { memberId: members[3]._id, groupId: group._id, amount: 500, month: "September", year: 2026 },
+      { memberId: members[4]._id, groupId: group._id, amount: 500, month: "September", year: 2026 },
+    ];
+    await Savings.insertMany(savingsRecords);
+
+    // 7. Create Loans & Installments
+    const loan1 = await Loan.create({
+      memberId: members[0]._id,
+      groupId: group._id,
+      amount: 10000,
+      purpose: "Small Dairy Cattle Purchase",
+      tenure: 10,
+      interestRate: 5,
+      totalAmount: 10417,
+      status: "Approved",
+      approvedAt: new Date(),
+    });
+
+    const due1 = new Date(); due1.setMonth(due1.getMonth() - 2);
+    await Repayment.create({ loanId: loan1._id, memberId: members[0]._id, installmentNumber: 1, amount: 1042, dueDate: due1, paidDate: due1, status: "Paid" });
+    const due2 = new Date(); due2.setMonth(due2.getMonth() - 1);
+    await Repayment.create({ loanId: loan1._id, memberId: members[0]._id, installmentNumber: 2, amount: 1042, dueDate: due2, paidDate: due2, status: "Paid" });
+    const due3 = new Date(); due3.setDate(due3.getDate() - 10);
+    await Repayment.create({ loanId: loan1._id, memberId: members[0]._id, installmentNumber: 3, amount: 1042, dueDate: due3, status: "Pending" });
+
+    for (let i = 4; i <= 10; i++) {
+      const futureDue = new Date(); futureDue.setMonth(futureDue.getMonth() + (i - 3));
+      await Repayment.create({ loanId: loan1._id, memberId: members[0]._id, installmentNumber: i, amount: 1042, dueDate: futureDue, status: "Pending" });
+    }
+
+    await Loan.create({
+      memberId: members[1]._id,
+      groupId: group._id,
+      amount: 15000,
+      purpose: "Grocery Shop Inventory Expansion",
+      tenure: 12,
+      interestRate: 5,
+      status: "Pending",
+    });
+
+    res.redirect("/login?success=" + encodeURIComponent("Database seeded successfully! Admin: admin@gmail.com / admin123 | Member: rahul@gmail.com / member123"));
+  } catch (err) {
+    console.error("Seed route error:", err);
+    res.redirect("/login?error=" + encodeURIComponent("Failed to seed database: " + err.message));
+  }
+});
+
 // GET /logout - Destroy session and redirect
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
