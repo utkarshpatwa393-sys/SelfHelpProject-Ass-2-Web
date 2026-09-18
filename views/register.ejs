@@ -1,0 +1,71 @@
+<%- include('partials/header') %>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand-icon">₹</div>
+      <h2 class="auth-title">Member Registration</h2>
+      <p class="auth-subtitle">Join your local Self-Help Group (SHG)</p>
+    </div>
+
+    <form action="/register" method="POST">
+      <div class="form-group">
+        <label for="reg-name" class="form-label">Full Name</label>
+        <input 
+          type="text" 
+          id="reg-name" 
+          name="name" 
+          class="form-input" 
+          placeholder="e.g. Priya Sharma" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email" class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          id="reg-email" 
+          name="email" 
+          class="form-input" 
+          placeholder="e.g. priya@gmail.com" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password" class="form-label">Create Password</label>
+        <input 
+          type="password" 
+          id="reg-password" 
+          name="password" 
+          class="form-input" 
+          placeholder="••••••••" 
+          minlength="4"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="reg-group" class="form-label">Select Self-Help Group</label>
+        <select id="reg-group" name="groupId" class="form-select">
+          <% if (groups && groups.length > 0) { %>
+            <% groups.forEach(g => { %>
+              <option value="<%= g._id %>"><%= g.name %></option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+        Register as Member
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.2rem; font-size: 0.9rem; color: var(--text-muted);">
+      Already a member? <a href="/login" style="color: var(--primary); font-weight: 600; text-decoration: none;">Sign in here</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
