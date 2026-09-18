@@ -1,0 +1,110 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Repayment Schedule</h1>
+    <p class="page-subtitle">Track your loan installment dates and payment records</p>
+  </div>
+  <a href="/member/dashboard" class="btn btn-outline">&larr; Back to Dashboard</a>
+</div>
+
+<!-- Repayment Overview Summary -->
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">Paid Instalments</div>
+      <div class="stat-value" style="color: var(--primary);"><%= paidCount %></div>
+    </div>
+    <div class="stat-icon icon-green">✓</div>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">Pending Instalments</div>
+      <div class="stat-value" style="color: var(--warning);"><%= pendingCount %></div>
+    </div>
+    <div class="stat-icon icon-amber">⏳</div>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">Total Amount Paid</div>
+      <div class="stat-value" style="color: var(--primary); font-size: 1.5rem;">
+        ₹<%= totalPaid.toLocaleString('en-IN') %>
+      </div>
+    </div>
+    <div class="stat-icon icon-teal">💰</div>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">Remaining Due</div>
+      <div class="stat-value" style="color: var(--danger); font-size: 1.5rem;">
+        ₹<%= totalPending.toLocaleString('en-IN') %>
+      </div>
+    </div>
+    <div class="stat-icon icon-red">📉</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Monthly Installment Ledger</h2>
+  </div>
+
+  <% if (repayments && repayments.length > 0) { %>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Installment No.</th>
+            <th>Amount Due</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Paid Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% const today = new Date(); %>
+          <% repayments.forEach(r => { %>
+            <% const isOverdue = r.status === 'Pending' && new Date(r.dueDate) < today; %>
+            <tr style="<%= isOverdue ? 'background-color: #fff1f2;' : '' %>">
+              <td><strong>Installment #<%= r.installmentNumber %></strong></td>
+              <td><strong>₹<%= r.amount.toLocaleString('en-IN') %></strong></td>
+              <td>
+                <%= new Date(r.dueDate).toLocaleDateString('en-IN') %>
+                <% if (isOverdue) { %>
+                  <span style="font-size: 0.72rem; color: var(--danger); font-weight: bold;">(Overdue)</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (r.status === 'Paid') { %>
+                  <span class="badge badge-paid">✓ Paid</span>
+                <% } else if (isOverdue) { %>
+                  <span class="badge badge-defaulter">⚠️ Overdue</span>
+                <% } else { %>
+                  <span class="badge badge-pending">⏳ Pending</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (r.paidDate) { %>
+                  <strong style="color: var(--primary);"><%= new Date(r.paidDate).toLocaleDateString('en-IN') %></strong>
+                <% } else { %>
+                  <span style="color: var(--text-muted);">-</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3 class="empty-title">No Repayments Scheduled</h3>
+      <p>Once you have an approved active loan, your monthly repayment schedule will be displayed here.</p>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

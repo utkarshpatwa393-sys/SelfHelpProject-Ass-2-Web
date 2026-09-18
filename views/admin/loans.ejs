@@ -1,0 +1,109 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Loan Requests & Management</h1>
+    <p class="page-subtitle">Review, approve, and track micro-loans for members</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">All Loan Applications (<%= loans.length %>)</h2>
+  </div>
+
+  <% if (loans && loans.length > 0) { %>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Principal Amount</th>
+            <th>Purpose</th>
+            <th>Tenure</th>
+            <th>Interest (5% p.a.)</th>
+            <th>Total Payable</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% loans.forEach(l => { %>
+            <% 
+              // Simple interest preview calculation for Pending loans
+              const previewInterest = Math.round((l.amount * (l.interestRate || 5) * (l.tenure / 12)) / 100);
+              const previewTotal = l.totalAmount > 0 ? l.totalAmount : (l.amount + previewInterest);
+            %>
+            <tr>
+              <td>
+                <strong><%= l.memberId ? l.memberId.name : 'Unknown' %></strong>
+                <div style="font-size: 0.78rem; color: var(--text-muted);"><%= l.memberId ? l.memberId.email : '' %></div>
+              </td>
+              <td><strong>₹<%= l.amount.toLocaleString('en-IN') %></strong></td>
+              <td><%= l.purpose %></td>
+              <td><%= l.tenure %> months</td>
+              <td><%= l.interestRate || 5 %>%</td>
+              <td>
+                <strong style="color: var(--primary);">₹<%= previewTotal.toLocaleString('en-IN') %></strong>
+                <% if (l.status === 'Approved') { %>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">
+                    EMI: ₹<%= Math.round(previewTotal / l.tenure).toLocaleString('en-IN') %>/mo
+                  </div>
+                <% } %>
+              </td>
+              <td>
+                <% if (l.status === 'Pending') { %>
+                  <span class="badge badge-pending">Pending Review</span>
+                <% } else if (l.status === 'Approved') { %>
+                  <span class="badge badge-approved">Approved</span>
+                <% } else if (l.status === 'Rejected') { %>
+                  <span class="badge badge-rejected">Rejected</span>
+                <% } else if (l.status === 'Completed') { %>
+                  <span class="badge badge-completed">Fully Repaid</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (l.status === 'Pending') { %>
+                  <div class="btn-group">
+                    <form action="/admin/loans/<%= l._id %>/approve" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Approve this loan and automatically generate monthly installments?')">
+                        ✓ Approve
+                      </button>
+                    </form>
+                    <form action="/admin/loans/<%= l._id %>/reject" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to reject this loan application?')">
+                        ✕ Reject
+                      </button>
+                    </form>
+                  </div>
+                <% } else if (l.status === 'Approved') { %>
+                  <a href="/admin/repayments" class="btn btn-outline btn-sm">View Schedule &rarr;</a>
+                <% } else { %>
+                  <span style="font-size: 0.85rem; color: var(--text-muted);">-</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">🤝</div>
+      <h3 class="empty-title">No Loan Applications</h3>
+      <p>When members submit loan requests, they will appear here for your review and approval.</p>
+    </div>
+  <% } %>
+</div>
+
+<div class="calc-box">
+  <h4>💡 Simple Interest Calculation Formula (For Evaluators)</h4>
+  <p style="font-size: 0.88rem; color: #065f46;">
+    <strong>Formula:</strong> <code>Interest = (Principal × Rate × (Tenure in Months / 12)) / 100</code><br>
+    <strong>Total Payable:</strong> <code>Principal + Interest</code><br>
+    <strong>Monthly Installment:</strong> <code>Total Payable / Tenure in Months</code><br>
+    <em>Example: ₹10,000 for 12 months @ 5% = ₹500 interest &rarr; ₹10,500 total payable &rarr; ₹875/month.</em>
+  </p>
+</div>
+
+<%- include('../partials/footer') %>

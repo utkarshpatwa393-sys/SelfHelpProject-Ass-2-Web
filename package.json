@@ -1,0 +1,33 @@
+{
+  "name": "self-help-group-tracker",
+  "version": "1.0.0",
+  "description": "Self-Help Group Savings & Micro-Loan Tracker for Rural Finance and Hackathons",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "seed": "node seed.js"
+  },
+  "keywords": [
+    "self-help-group",
+    "micro-loan",
+    "rural-finance",
+    "fintech",
+    "express",
+    "ejs",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "mongoose": "^8.9.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

@@ -1,0 +1,56 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Group Members</h1>
+    <p class="page-subtitle">View and manage registered members</p>
+  </div>
+  <a href="/admin/members/add" class="btn btn-primary">+ Add New Member</a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">All Members (<%= members.length %>)</h2>
+  </div>
+
+  <% if (members && members.length > 0) { %>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Member Name</th>
+            <th>Email</th>
+            <th>Assigned Group</th>
+            <th>Role</th>
+            <th>Joined Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% members.forEach(m => { %>
+            <tr>
+              <td><strong><%= m.name %></strong></td>
+              <td><%= m.email %></td>
+              <td>
+                <% if (m.groupId) { %>
+                  <span class="badge badge-approved"><%= m.groupId.name %></span>
+                <% } else { %>
+                  <span class="badge badge-pending">Unassigned</span>
+                <% } %>
+              </td>
+              <td><span class="role-tag member">Member</span></td>
+              <td><%= new Date(m.createdAt).toLocaleDateString('en-IN') %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">👥</div>
+      <h3 class="empty-title">No Members Found</h3>
+      <p>Click "+ Add New Member" to register members.</p>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

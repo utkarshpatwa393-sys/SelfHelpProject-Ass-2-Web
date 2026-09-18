@@ -1,0 +1,129 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Savings Management</h1>
+    <p class="page-subtitle">Record and track monthly member savings contributions</p>
+  </div>
+</div>
+
+<div class="form-grid" style="grid-template-columns: 1fr 1.8fr; align-items: start;">
+  <!-- Record Savings Form -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">+ Record Monthly Savings</h2>
+    </div>
+
+    <form action="/admin/savings/add" method="POST">
+      <div class="form-group">
+        <label for="savings-member" class="form-label">Select Member</label>
+        <select id="savings-member" name="memberId" class="form-select" required>
+          <option value="">-- Choose Member --</option>
+          <% if (members && members.length > 0) { %>
+            <% members.forEach(m => { %>
+              <option value="<%= m._id %>"><%= m.name %> (<%= m.email %>)</option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="savings-month" class="form-label">Month</label>
+        <select id="savings-month" name="month" class="form-select" required>
+          <option value="January">January</option>
+          <option value="February">February</option>
+          <option value="March">March</option>
+          <option value="April">April</option>
+          <option value="May">May</option>
+          <option value="June">June</option>
+          <option value="July">July</option>
+          <option value="August">August</option>
+          <option value="September" selected>September</option>
+          <option value="October">October</option>
+          <option value="November">November</option>
+          <option value="December">December</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="savings-year" class="form-label">Year</label>
+        <input 
+          type="number" 
+          id="savings-year" 
+          name="year" 
+          class="form-input" 
+          value="2026" 
+          min="2020" 
+          max="2035" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="savings-amount" class="form-label">Savings Amount (₹)</label>
+        <input 
+          type="number" 
+          id="savings-amount" 
+          name="amount" 
+          class="form-input" 
+          placeholder="e.g. 500" 
+          min="50" 
+          step="50" 
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%;">
+        Save Contribution
+      </button>
+    </form>
+  </div>
+
+  <!-- Savings Ledger Table -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Savings Ledger Records (<%= savingsList.length %>)</h2>
+    </div>
+
+    <% if (savingsList && savingsList.length > 0) { %>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Month / Year</th>
+              <th>Amount</th>
+              <th>Date Recorded</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% let grandTotal = 0; %>
+            <% savingsList.forEach(s => { %>
+              <% grandTotal += s.amount; %>
+              <tr>
+                <td><strong><%= s.memberId ? s.memberId.name : 'Unknown' %></strong></td>
+                <td><%= s.month %> <%= s.year %></td>
+                <td><strong style="color: var(--primary);">₹<%= s.amount.toLocaleString('en-IN') %></strong></td>
+                <td><%= new Date(s.createdAt).toLocaleDateString('en-IN') %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2"><strong>Total Contributions Recorded:</strong></td>
+              <td colspan="2"><strong style="color: var(--primary); font-size: 1.05rem;">₹<%= grandTotal.toLocaleString('en-IN') %></strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">🪙</div>
+        <h3 class="empty-title">No Savings Recorded Yet</h3>
+        <p>Record monthly savings for members using the form.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

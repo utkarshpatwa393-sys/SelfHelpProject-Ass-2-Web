@@ -1,0 +1,136 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Welcome, <%= user.name %>!</h1>
+    <p class="page-subtitle">Your personal Self-Help Group financial overview</p>
+  </div>
+  <div>
+    <a href="/member/loan/request" class="btn btn-primary">+ Request Micro-Loan</a>
+  </div>
+</div>
+
+<!-- Pending Loan Notice if applicable -->
+<% if (pendingLoanRequest) { %>
+  <div class="alert alert-success" style="background-color: #fef3c7; color: #92400e; border-color: #fde68a;">
+    <span>⏳</span>
+    <div>
+      <strong>Loan Application Under Review:</strong> Your loan request of <strong>₹<%= pendingLoanRequest.amount.toLocaleString('en-IN') %></strong> for "<em><%= pendingLoanRequest.purpose %></em>" is awaiting admin approval.
+    </div>
+  </div>
+<% } %>
+
+<!-- Member Stat Cards -->
+<div class="stats-grid">
+  <!-- Card 1: Total Savings -->
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">My Total Savings</div>
+      <div class="stat-value">₹<%= totalSavings.toLocaleString('en-IN') %></div>
+    </div>
+    <div class="stat-icon icon-green">🪙</div>
+  </div>
+
+  <!-- Card 2: Active Loan -->
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">My Active Loan</div>
+      <div class="stat-value">
+        <% if (activeLoan) { %>
+          ₹<%= activeLoan.amount.toLocaleString('en-IN') %>
+        <% } else { %>
+          ₹0
+        <% } %>
+      </div>
+    </div>
+    <div class="stat-icon icon-blue">🤝</div>
+  </div>
+
+  <!-- Card 3: Outstanding Balance -->
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">Outstanding Balance</div>
+      <div class="stat-value" style="<%= outstandingBalance > 0 ? 'color: var(--danger);' : '' %>">
+        ₹<%= outstandingBalance.toLocaleString('en-IN') %>
+      </div>
+    </div>
+    <div class="stat-icon icon-amber">📉</div>
+  </div>
+
+  <!-- Card 4: Pending Installments -->
+  <div class="stat-card">
+    <div>
+      <div class="stat-label">Pending Instalments</div>
+      <div class="stat-value">
+        <%= pendingInstallments %> <span style="font-size: 0.9rem; font-weight: normal; color: var(--text-muted);">/ <%= pendingInstallments + paidInstallments %></span>
+      </div>
+    </div>
+    <div class="stat-icon icon-purple">📅</div>
+  </div>
+</div>
+
+<!-- Active Loan Summary Box (if any) -->
+<% if (activeLoan) { %>
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">
+        <span>Active Loan Breakdown: <%= activeLoan.purpose %></span>
+        <span class="badge badge-approved">Approved</span>
+      </h2>
+      <a href="/member/repayments" class="btn btn-outline btn-sm">View Repayment Schedule &rarr;</a>
+    </div>
+
+    <div class="calc-details">
+      <div class="calc-item">
+        <span>Principal Amount</span>
+        <strong>₹<%= activeLoan.amount.toLocaleString('en-IN') %></strong>
+      </div>
+      <div class="calc-item">
+        <span>Total Payable (with 5% Interest)</span>
+        <strong>₹<%= activeLoan.totalAmount.toLocaleString('en-IN') %></strong>
+      </div>
+      <div class="calc-item">
+        <span>Total Amount Paid</span>
+        <strong style="color: var(--primary);">₹<%= amountPaid.toLocaleString('en-IN') %></strong>
+      </div>
+      <div class="calc-item">
+        <span>Remaining Balance</span>
+        <strong style="color: var(--danger);">₹<%= outstandingBalance.toLocaleString('en-IN') %></strong>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<!-- Quick Action Shortcuts -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Quick Actions & Services</h2>
+  </div>
+  <div class="stats-grid" style="margin-bottom: 0;">
+    <a href="/member/savings" class="stat-card" style="text-decoration: none; color: inherit;">
+      <div>
+        <div class="stat-label">Passbook</div>
+        <div style="font-size: 1.1rem; font-weight: 600;">Savings Passbook &rarr;</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">View your monthly contribution history</p>
+      </div>
+    </a>
+
+    <a href="/member/loans" class="stat-card" style="text-decoration: none; color: inherit;">
+      <div>
+        <div class="stat-label">Loans</div>
+        <div style="font-size: 1.1rem; font-weight: 600;">My Loans History &rarr;</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Check loan status and approvals</p>
+      </div>
+    </a>
+
+    <a href="/member/repayments" class="stat-card" style="text-decoration: none; color: inherit;">
+      <div>
+        <div class="stat-label">Schedule</div>
+        <div style="font-size: 1.1rem; font-weight: 600;">Repayment Schedule &rarr;</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Track due dates and paid installments</p>
+      </div>
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Loans</h1>
+    <p class="page-subtitle">Track your micro-loan applications and balances</p>
+  </div>
+  <a href="/member/loan/request" class="btn btn-primary">+ Request New Loan</a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Loan Applications & History</h2>
+  </div>
+
+  <% if (loans && loans.length > 0) { %>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Purpose</th>
+            <th>Principal Amount</th>
+            <th>Tenure</th>
+            <th>Interest Rate</th>
+            <th>Total Payable</th>
+            <th>Amount Paid</th>
+            <th>Outstanding Balance</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% loans.forEach(l => { %>
+            <% 
+              const previewInterest = Math.round((l.amount * (l.interestRate || 5) * (l.tenure / 12)) / 100);
+              const totalDue = l.totalAmount > 0 ? l.totalAmount : (l.amount + previewInterest);
+            %>
+            <tr>
+              <td><strong><%= l.purpose %></strong></td>
+              <td>₹<%= l.amount.toLocaleString('en-IN') %></td>
+              <td><%= l.tenure %> months</td>
+              <td><%= l.interestRate || 5 %>% p.a.</td>
+              <td><strong>₹<%= totalDue.toLocaleString('en-IN') %></strong></td>
+              <td><strong style="color: var(--primary);">₹<%= l.amountPaid.toLocaleString('en-IN') %></strong></td>
+              <td>
+                <strong style="<%= l.outstandingBalance > 0 ? 'color: var(--danger);' : '' %>">
+                  ₹<%= l.outstandingBalance.toLocaleString('en-IN') %>
+                </strong>
+              </td>
+              <td>
+                <% if (l.status === 'Pending') { %>
+                  <span class="badge badge-pending">Pending Approval</span>
+                <% } else if (l.status === 'Approved') { %>
+                  <span class="badge badge-approved">Approved / Active</span>
+                <% } else if (l.status === 'Rejected') { %>
+                  <span class="badge badge-rejected">Rejected</span>
+                <% } else if (l.status === 'Completed') { %>
+                  <span class="badge badge-completed">Paid in Full</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">📝</div>
+      <h3 class="empty-title">No Loans Found</h3>
+      <p>You have not applied for any micro-loans yet.</p>
+      <a href="/member/loan/request" class="btn btn-primary" style="margin-top: 1rem;">Apply for a Loan</a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

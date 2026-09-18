@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand-icon">₹</div>
+      <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-subtitle">Sign in to Self-Help Group Portal</p>
+    </div>
+
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <label for="login-email" class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          id="login-email" 
+          name="email" 
+          class="form-input" 
+          placeholder="e.g. admin@gmail.com" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="login-password" class="form-label">Password</label>
+        <input 
+          type="password" 
+          id="login-password" 
+          name="password" 
+          class="form-input" 
+          placeholder="••••••••" 
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+        Sign In
+      </button>
+    </form>
+
+    <!-- Hackathon Quick Demo Box -->
+    <div class="demo-credentials">
+      <div class="demo-title">
+        <span>⚡ Quick Demo Logins</span>
+        <small style="font-weight: normal; color: var(--text-muted);">Click to fill</small>
+      </div>
+      
+      <div class="demo-item">
+        <span><strong>Admin:</strong> admin@gmail.com</span>
+        <button type="button" class="demo-btn" onclick="fillLogin('admin@gmail.com', 'admin123')">Use Admin</button>
+      </div>
+      
+      <div class="demo-item">
+        <span><strong>Member:</strong> rahul@gmail.com</span>
+        <button type="button" class="demo-btn" onclick="fillLogin('rahul@gmail.com', 'member123')">Use Member</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

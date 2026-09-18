@@ -1,0 +1,78 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Add New Member</h1>
+    <p class="page-subtitle">Register a member and assign them to an SHG</p>
+  </div>
+  <a href="/admin/members" class="btn btn-outline">&larr; Back to Members</a>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+  <div class="card-header">
+    <h2 class="card-title">Member Registration Form</h2>
+  </div>
+
+  <form action="/admin/members/add" method="POST">
+    <div class="form-group">
+      <label for="member-name" class="form-label">Full Name</label>
+      <input 
+        type="text" 
+        id="member-name" 
+        name="name" 
+        class="form-input" 
+        placeholder="e.g. Rahul Sharma" 
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="member-email" class="form-label">Email Address</label>
+      <input 
+        type="email" 
+        id="member-email" 
+        name="email" 
+        class="form-input" 
+        placeholder="e.g. rahul@gmail.com" 
+        required
+      >
+      <div class="form-help">This will be used by the member to log into their dashboard.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="member-password" class="form-label">Temporary Password</label>
+      <input 
+        type="password" 
+        id="member-password" 
+        name="password" 
+        class="form-input" 
+        placeholder="••••••••" 
+        required
+      >
+      <div class="form-help">Password will be safely hashed using bcrypt before saving.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="member-group" class="form-label">Assign to Self-Help Group</label>
+      <select id="member-group" name="groupId" class="form-select">
+        <option value="">-- Select Group --</option>
+        <% if (groups && groups.length > 0) { %>
+          <% groups.forEach(g => { %>
+            <option value="<%= g._id %>"><%= g.name %></option>
+          <% }); %>
+        <% } %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Default Role</label>
+      <input type="text" class="form-input" value="Member" disabled>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+      Register Member
+    </button>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

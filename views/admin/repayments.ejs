@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Repayments Management</h1>
+    <p class="page-subtitle">Track loan installments and mark payments received</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">All Loan Installments (<%= repayments.length %>)</h2>
+  </div>
+
+  <% if (repayments && repayments.length > 0) { %>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Loan Purpose</th>
+            <th>Installment #</th>
+            <th>Amount Due</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Paid Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% const today = new Date(); %>
+          <% repayments.forEach(r => { %>
+            <% const isOverdue = r.status === 'Pending' && new Date(r.dueDate) < today; %>
+            <tr style="<%= isOverdue ? 'background-color: #fff1f2;' : '' %>">
+              <td>
+                <strong><%= r.memberId ? r.memberId.name : 'Unknown' %></strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);"><%= r.memberId ? r.memberId.email : '' %></div>
+              </td>
+              <td><%= r.loanId ? r.loanId.purpose : 'Micro-loan' %></td>
+              <td>
+                <strong>#<%= r.installmentNumber %></strong>
+                <% if (r.loanId) { %>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">/ <%= r.loanId.tenure %></span>
+                <% } %>
+              </td>
+              <td><strong>₹<%= r.amount.toLocaleString('en-IN') %></strong></td>
+              <td>
+                <%= new Date(r.dueDate).toLocaleDateString('en-IN') %>
+                <% if (isOverdue) { %>
+                  <div style="font-size: 0.72rem; color: var(--danger); font-weight: bold;">(Overdue)</div>
+                <% } %>
+              </td>
+              <td>
+                <% if (r.status === 'Paid') { %>
+                  <span class="badge badge-paid">Paid</span>
+                <% } else if (isOverdue) { %>
+                  <span class="badge badge-defaulter">Overdue</span>
+                <% } else { %>
+                  <span class="badge badge-pending">Pending</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (r.paidDate) { %>
+                  <%= new Date(r.paidDate).toLocaleDateString('en-IN') %>
+                <% } else { %>
+                  <span style="color: var(--text-muted);">-</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (r.status === 'Pending') { %>
+                  <form action="/admin/repayments/<%= r._id %>/pay" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Confirm receipt of ₹<%= r.amount %> for this installment?')">
+                      💰 Mark Paid
+                    </button>
+                  </form>
+                <% } else { %>
+                  <span style="color: var(--success); font-weight: 600; font-size: 0.85rem;">✓ Completed</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3 class="empty-title">No Repayments Generated Yet</h3>
+      <p>Installment schedules are automatically generated when Admin approves a member's loan request.</p>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

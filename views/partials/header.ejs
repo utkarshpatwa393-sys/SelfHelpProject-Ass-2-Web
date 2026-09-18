@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self-Help Group Savings & Micro-Loan Tracker</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Google Fonts for clean typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="nav-container">
+    <a href="/" class="brand">
+      <div class="brand-icon">₹</div>
+      <span>SHG Tracker</span>
+    </a>
+
+    <% if (typeof user !== 'undefined' && user) { %>
+      <nav class="nav-links">
+        <% if (user.role === 'Admin') { %>
+          <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+          <a href="/admin/groups" class="nav-link">Groups</a>
+          <a href="/admin/members" class="nav-link">Members</a>
+          <a href="/admin/savings" class="nav-link">Savings</a>
+          <a href="/admin/loans" class="nav-link">Loans</a>
+          <a href="/admin/repayments" class="nav-link">Repayments</a>
+        <% } else { %>
+          <a href="/member/dashboard" class="nav-link">Dashboard</a>
+          <a href="/member/savings" class="nav-link">My Savings</a>
+          <a href="/member/loans" class="nav-link">My Loans</a>
+          <a href="/member/repayments" class="nav-link">Repayment Schedule</a>
+          <a href="/member/loan/request" class="nav-link">Request Loan</a>
+        <% } %>
+
+        <div class="nav-user">
+          <div class="user-badge">
+            <span><%= user.name %></span>
+            <span class="role-tag <%= user.role.toLowerCase() %>"><%= user.role %></span>
+          </div>
+          <a href="/logout" class="btn-logout">Logout</a>
+        </div>
+      </nav>
+    <% } else { %>
+      <div class="nav-links">
+        <a href="/login" class="nav-link active">Login</a>
+      </div>
+    <% } %>
+  </div>
+</header>
+
+<main class="main-container">
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success">
+      <span>✓</span> <%= success %>
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <span>⚠</span> <%= error %>
+    </div>
+  <% } %>
